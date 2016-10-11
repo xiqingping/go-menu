@@ -46,7 +46,7 @@ func NewMenuOptions(prompt string, length int) MenuOptions {
 
 // Trim whitespace, newlines, and create command+arguments slice
 func cleanCommand(cmd string) ([]string, error) {
-	cmd_args := strings.Split(strings.Trim(cmd, " \n"), " ")
+	cmd_args := strings.Split(strings.Trim(cmd, " \r\n"), " ")
 	return cmd_args, nil
 }
 
@@ -73,9 +73,10 @@ func (m *Menu) Start() {
 
 // Main loop
 func (m *Menu) start(reader io.Reader) {
-	m.menu()
 MainLoop:
 	for {
+		fmt.Println("")
+		m.menu()
 		input := bufio.NewReader(reader)
 		// Prompt for input
 		m.prompt()
@@ -95,13 +96,12 @@ MainLoop:
 		// Route the first index of the cmd slice to the appropriate case
 	Route:
 		switch cmd[0] {
+		case "":
+			break
+
 		case "exit", "quit":
 			fmt.Println("Exiting...")
 			break MainLoop
-
-		case "menu":
-			m.menu()
-			break
 
 		default:
 			// Loop through commands and find the right one
@@ -118,7 +118,7 @@ MainLoop:
 				}
 			}
 			// Shouldn't get here if we found a command
-			fmt.Println("Unknown command")
+			fmt.Println("Unknown command", cmd[0])
 		}
 	}
 }
